@@ -116,11 +116,20 @@ public class JDBC {
         System.out.println("2) List Data Of Group");
         System.out.println("3) List All Publishers");
         
+        String sql = "";
+        
         try{
             switch(in.nextInt()){
-                case 1: listAllWritingGroups(); break;
-                case 2: listDataOfGroup(); break;
+                case 1: sql = "SELECT gName FROM writingGroup"; break;
+                case 2: sql = listDataOfTable("writingGroup"); break;
+                case 3: sql = "SELECT pName FROM Publisher "; break;
+                case 4: sql = listDataOfTable("Publisher"); break;
+                case 5: sql = "SELECT gName FROM Book"; break;
+                case 6: sql = listDataOfTable("Book"); break;
+                
             }
+            
+            exeStatement(sql);
         }
         catch(Exception se){
             System.out.println("Enter an integer!");
@@ -128,29 +137,22 @@ public class JDBC {
         
     }
     
-    public static void listAllWritingGroups(){
-       
-            
-        String sql = "SELECT gName FROM writingGroup";
-            
-        exeStatement(sql);
-            
-    }
     
-    public static void listDataOfGroup(){
+    public static String listDataOfTable(String tableName){
         
         in.nextLine();
-        String groupName;
+        String name;
         
-        System.out.print("Enter Group Name: ");
-        groupName=in.nextLine();
+        System.out.print("Enter "+ tableName+" Name: ");
+        name=in.nextLine();
         
         
-        String sql = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName  = "+"\'"+groupName+"\'";
-        
-        exeStatement(sql);
+        return "Select headWriter,yearFounded,subject FROM "+ tableName +" WHERE gName  = "+"\'"+name+"\'";
         
     }
+    
+    
+    
     
     
 }
