@@ -5,9 +5,9 @@ import java.util.Scanner;
 
 public class JDBC {
     //  Database credentials
-    static String USER;
-    static String PASS;
-    static String DBNAME;
+    static String USER = "root";
+    static String PASS = "pass";
+    static String DBNAME = "JDBC";
     
     //connection var 
     static Connection conn = null; //initialize the connection
@@ -30,13 +30,6 @@ public class JDBC {
     
     public static void establishConnection(){
         
-        Scanner in = new Scanner(System.in);
-        System.out.print("Name of the database (not the user account): ");
-        DBNAME = in.nextLine();
-        System.out.print("Database user name: ");
-        USER = in.nextLine();
-        System.out.print("Database password: ");
-        PASS = in.nextLine();
         //Constructing the database URL connection string
         DB_URL = DB_URL + DBNAME + ";user="+ USER + ";password=" + PASS;
         
@@ -53,6 +46,16 @@ public class JDBC {
             e.printStackTrace();
         }
         
+    }
+    
+    public static void userConnectPrompt(){
+        Scanner in = new Scanner(System.in);
+        System.out.print("Name of the database (not the user account): ");
+        DBNAME = in.nextLine();
+        System.out.print("Database user name: ");
+        USER = in.nextLine();
+        System.out.print("Database password: ");
+        PASS = in.nextLine();
     }
     
     public static void printData(ResultSet rs, int columnCount) throws SQLException {
@@ -72,7 +75,7 @@ public class JDBC {
             
             Statement stmt = conn.createStatement();
             
-            String sql = "SELECT gName, headWriter, yearFounded, subject FROM writingGroup";
+            String sql = "SELECT gName FROM writingGroup";
             
             ResultSet rs = stmt.executeQuery(sql);
             
@@ -91,13 +94,36 @@ public class JDBC {
         }
     }
     
+    public static void listDataOfGroup(String groupName){
+        
+        String sql = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName  = "+"\'"+groupName+"\'";
+                    
+        try{
+            Statement stmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            ResultSetMetaData rmd = rs.getMetaData();
+            int columnCount = rmd.getColumnCount();
+            
+            printData(rs,columnCount);
+            
+            rs.close();
+            stmt.close();
+        }
+        catch(SQLException se){
+            se.printStackTrace();
+        }
+    }
+    
     
     public static void main(String[] args) {
         
         establishConnection();
         
         //testfunctions
-        listAllWritingGroups();
+        //listAllWritingGroups();
+        listDataOfGroup("Algorithms Group");
         
         try {
             conn.close();
