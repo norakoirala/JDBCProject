@@ -27,7 +27,7 @@ public class JDBC {
         
         //testfunctions
         //listAllWritingGroups();
-        listDataOfGroup("Algorithms Group");
+        
         
         try {
             conn.close();
@@ -107,6 +107,27 @@ public class JDBC {
             }
     }
     
+    public static void Menu(){
+        
+        Scanner userInput = new Scanner(System.in);
+        
+        System.out.println("Please Select From Menu:");
+        System.out.println("1) List All Writing Groups");
+        System.out.println("2) List Data Of Group");
+        System.out.println("3) List All Publishers");
+        
+        try{
+            switch(userInput.nextInt()){
+                case 1: listAllWritingGroups(); break;
+                case 2: listDataOfGroup("Algorithms Group"); break;
+            }
+        }
+        catch(Exception se){
+            System.out.println("Enter an integer!");
+        }
+        
+    }
+    
     public static void listAllWritingGroups(){
        
             
@@ -123,6 +144,8 @@ public class JDBC {
         exeStatement(sql);
         
     }
+    
+    
 }
     
  
