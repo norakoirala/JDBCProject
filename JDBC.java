@@ -9,6 +9,9 @@ public class JDBC {
     static String PASS = "pass";
     static String DBNAME = "JDBC";
     
+    //user input 
+    static Scanner in = new Scanner(System.in);
+    
     //connection var 
     static Connection conn = null; //initialize the connection
     
@@ -25,9 +28,7 @@ public class JDBC {
         
         establishConnection();
         
-        //testfunctions
-        //listAllWritingGroups();
-        
+        Menu();
         
         try {
             conn.close();
@@ -68,7 +69,7 @@ public class JDBC {
     }
     
     public static void userConnectPrompt(){
-        Scanner in = new Scanner(System.in);
+        
         System.out.print("Name of the database (not the user account): ");
         DBNAME = in.nextLine();
         System.out.print("Database user name: ");
@@ -109,7 +110,6 @@ public class JDBC {
     
     public static void Menu(){
         
-        Scanner userInput = new Scanner(System.in);
         
         System.out.println("Please Select From Menu:");
         System.out.println("1) List All Writing Groups");
@@ -117,9 +117,9 @@ public class JDBC {
         System.out.println("3) List All Publishers");
         
         try{
-            switch(userInput.nextInt()){
+            switch(in.nextInt()){
                 case 1: listAllWritingGroups(); break;
-                case 2: listDataOfGroup("Algorithms Group"); break;
+                case 2: listDataOfGroup(); break;
             }
         }
         catch(Exception se){
@@ -137,7 +137,14 @@ public class JDBC {
             
     }
     
-    public static void listDataOfGroup(String groupName){
+    public static void listDataOfGroup(){
+        
+        in.nextLine();
+        String groupName;
+        
+        System.out.print("Enter Group Name: ");
+        groupName=in.nextLine();
+        
         
         String sql = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName  = "+"\'"+groupName+"\'";
         
