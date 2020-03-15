@@ -18,8 +18,27 @@ public class JDBC {
 // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.apache.derby.jdbc.ClientDriver";
     static String DB_URL = "jdbc:derby://localhost:1527/";
-    
 
+    
+    
+    public static void main(String[] args) {
+        
+        establishConnection();
+        
+        //testfunctions
+        //listAllWritingGroups();
+        listDataOfGroup("Algorithms Group");
+        
+        try {
+            conn.close();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } 
+        
+        
+        System.out.println("Goodbye!");
+    }
+    
     public static String dispNull (String input) {
         //because of short circuiting, if it's null, it never checks the length.
         if (input == null || input.length() == 0)
@@ -58,6 +77,25 @@ public class JDBC {
         PASS = in.nextLine();
     }
     
+    public static void exeStatement(String sql ){
+        try{
+            Statement stmt = conn.createStatement();
+            
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            ResultSetMetaData rmd = rs.getMetaData();
+            int columnCount = rmd.getColumnCount();
+            
+            printData(rs,columnCount);
+            
+            rs.close();
+            stmt.close();
+        }
+        catch(SQLException se){
+            se.printStackTrace();
+        }
+    }
+    
     public static void printData(ResultSet rs, int columnCount) throws SQLException {
         while(rs.next()){
                 System.out.print("Row: "+rs.getRow());
@@ -71,67 +109,20 @@ public class JDBC {
     
     public static void listAllWritingGroups(){
        
-        try{
             
-            Statement stmt = conn.createStatement();
+        String sql = "SELECT gName FROM writingGroup";
             
-            String sql = "SELECT gName FROM writingGroup";
+        exeStatement(sql);
             
-            ResultSet rs = stmt.executeQuery(sql);
-            
-            ResultSetMetaData rmd = rs.getMetaData();
-            
-            int columnCount = rmd.getColumnCount();
-            
-            printData(rs,columnCount);
-            
-            rs.close();
-            stmt.close();
-            
-        }
-        catch(SQLException se){
-            se.printStackTrace();
-        }
     }
     
     public static void listDataOfGroup(String groupName){
         
         String sql = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName  = "+"\'"+groupName+"\'";
-                    
-        try{
-            Statement stmt = conn.createStatement();
-            
-            ResultSet rs = stmt.executeQuery(sql);
-            
-            ResultSetMetaData rmd = rs.getMetaData();
-            int columnCount = rmd.getColumnCount();
-            
-            printData(rs,columnCount);
-            
-            rs.close();
-            stmt.close();
-        }
-        catch(SQLException se){
-            se.printStackTrace();
-        }
-    }
-    
-    
-    public static void main(String[] args) {
         
-        establishConnection();
+        exeStatement(sql);
         
-        //testfunctions
-        //listAllWritingGroups();
-        listDataOfGroup("Algorithms Group");
-        
-        try {
-            conn.close();
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } 
-        
-        
-        System.out.println("Goodbye!");
     }
 }
+    
+ 
