@@ -78,7 +78,7 @@ public class JDBC {
         PASS = in.nextLine();
     }
     
-    public static void exeStatement(String sql ){
+    public static void exeQuery(String sql){
         try{
             Statement stmt = conn.createStatement();
             
@@ -90,6 +90,19 @@ public class JDBC {
             printData(rs,columnCount);
             
             rs.close();
+            stmt.close();
+        }
+        catch(SQLException se){
+            se.printStackTrace();
+        }
+    }
+    
+    public static void exeUpdate(String sql){
+        try{
+            Statement stmt = conn.createStatement();
+            
+            stmt.executeUpdate(sql);
+            
             stmt.close();
         }
         catch(SQLException se){
@@ -116,7 +129,7 @@ public class JDBC {
         System.out.println("2) List Data Of Group");
         System.out.println("3) List All Publishers");
         
-        String sql = "";
+        String sql = null;
         
         try{
             switch(in.nextInt()){
@@ -126,10 +139,11 @@ public class JDBC {
                 case 4: sql = listDataOfTable("Publisher"); break;
                 case 5: sql = "SELECT gName FROM Book"; break;
                 case 6: sql = listDataOfTable("Book"); break;
+                case 7: insertBook(); break;
                 
             }
             
-            exeStatement(sql);
+            exeQuery(sql);
         }
         catch(Exception se){
             System.out.println("Enter an integer!");
@@ -151,7 +165,42 @@ public class JDBC {
         
     }
     
-    
+    public static void insertBook(){
+        in.nextLine();
+        
+        String sql="";
+        
+        System.out.print("Enter Group Name: ");
+           String groupName = in.nextLine();
+        
+        System.out.print("Enter Title: ");
+            String title = in.nextLine();
+            
+        System.out.print("Enter Publisher Name: ");
+            String publisherName  = in.nextLine();
+        
+        try{    
+            System.out.print("Enter Year Published: ");
+                int year = in.nextInt();
+                
+            System.out.print("Enter Number Of Pages: ");
+                int pages = in.nextInt();
+                
+            sql = "INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES (\'"+groupName+"\', \'"
+                    + title + "\', \'"
+                    + publisherName + "\', "
+                    + year +", "
+                    + pages+" )";
+            
+           System.out.println(sql);
+           
+        }catch(Exception e){
+            System.out.println("Enter a number for year or pages!");
+        }
+        
+        exeUpdate(sql);
+        
+    }
     
     
     
