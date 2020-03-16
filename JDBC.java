@@ -128,6 +128,10 @@ public class JDBC {
         System.out.println("1) List All Writing Groups");
         System.out.println("2) List Data Of Group");
         System.out.println("3) List All Publishers");
+        System.out.println("4) List Data Of Publishers");
+        System.out.println("5) List All Books");
+        System.out.println("6) List Data Of Books");
+        System.out.println("7) List Data Of Books");
         
         String sql = null;
         
@@ -151,7 +155,6 @@ public class JDBC {
         
     }
     
-    
     public static String listDataOfTable(String tableName){
         
         in.nextLine();
@@ -159,7 +162,6 @@ public class JDBC {
         
         System.out.print("Enter "+ tableName+" Name: ");
         name=in.nextLine();
-        
         
         return "Select headWriter,yearFounded,subject FROM "+ tableName +" WHERE gName  = "+"\'"+name+"\'";
         
