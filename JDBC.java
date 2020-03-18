@@ -131,7 +131,9 @@ public class JDBC {
         System.out.println("4) List Data Of Publishers");
         System.out.println("5) List All Books");
         System.out.println("6) List Data Of Books");
-        System.out.println("7) List Data Of Books");
+        System.out.println("7) Add New Book");
+        System.out.println("8) Switch Publishers");
+        System.out.println("9) Remove Book");
         
         String sql = null;
         
@@ -144,10 +146,12 @@ public class JDBC {
                 case 5: sql = "SELECT gName FROM Book"; break;
                 case 6: sql = listDataOfTable("Book"); break;
                 case 7: insertBook(); break;
-                
+                case 8: createSwitchPublisher(); break;
+                case 9: removeBook(); break;
             }
             
-            exeQuery(sql);
+            if(sql != null)
+                exeQuery(sql);
         }
         catch(Exception se){
             System.out.println("Enter an integer!");
@@ -193,18 +197,74 @@ public class JDBC {
                     + publisherName + "\', "
                     + year +", "
                     + pages+" )";
-            
-           System.out.println(sql);
            
         }catch(Exception e){
             System.out.println("Enter a number for year or pages!");
         }
         
+        System.out.println(sql);
         exeUpdate(sql);
         
     }
     
+    public static void newPublisher(String pName){
+        String sql="";
+        
+        System.out.print("Enter Publisher Address: ");
+            String pAddress = in.nextLine();
+            
+        System.out.print("Enter Publisher Phone Number: ");
+            String pPhone = in.nextLine();
+        
+        System.out.print("Enter Publisher Email: ");
+            String pEmail = in.nextLine();
+           
+        sql = "INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES (\'"
+                    +pName+"\', \'"
+                    + pAddress + "\', \'"
+                    + pPhone + "\', \'"
+                    + pEmail +"\')";
+        
+        //debug
+        System.out.println(sql);
+        
+        exeUpdate(sql);
+    }
     
+    public static void createSwitchPublisher(){
+        in.nextLine();
+        
+        String sql="";
+        
+        System.out.print("Enter New Publisher Name: ");
+           String pName = in.nextLine();
+           
+        newPublisher(pName);
+        
+        System.out.print("Enter Old Publisher: ");
+            String old_pName = in.nextLine();
+        
+        sql = "UPDATE Book SET pName  = \'"+pName+ "\' WHERE pName = \'"+ old_pName + "\' ";
+        System.out.println(sql);
+        exeUpdate(sql);
+    }
+    
+    public static void removeBook(){
+        String sql="";
+        
+        in.nextLine();
+        
+        System.out.print("Enter Book title: ");
+            String bTitle = in.nextLine();
+            
+        System.out.print("Enter Group Name: ");
+            String gName = in.nextLine();
+            
+        sql = "DELETE FROM Book WHERE bTitle = \'"+ bTitle+"\'"+ "AND gname = \'"+gName+"\'";
+        
+        exeUpdate(sql);
+        
+    }
     
 }
     

@@ -5,6 +5,15 @@ CREATE TABLE writingGroup ( /* Table for Writing Group*/
    subject      VARCHAR(100) NOT NULL, /*Column for group's subject*/
    CONSTRAINT writingGroup_pk PRIMARY KEY (gName)); /*Group name is primary key*/
 
+
+
+CREATE TABLE Publisher ( /* Table for Publisher*/
+   pName      VARCHAR(100) NOT NULL, /*Column for publisher name*/
+   pAddress   VARCHAR(100) NOT NULL, /*Column for publisher address*/
+   pPhone     VARCHAR(100) NOT NULL, /*Column for publisher phone number*/
+   pEmail     VARCHAR(100) NOT NULL, /*Column for publisher email address*/
+CONSTRAINT publisher_pk  PRIMARY KEY (pName)); /*Publisher name is foreign key*/
+
 CREATE TABLE Book ( /* Table for Book*/
    gName           VARCHAR(100) NOT NULL, /*Column for book's group name*/
    bTitle          VARCHAR(100) NOT NULL, /*Column for book title*/
@@ -13,17 +22,8 @@ CREATE TABLE Book ( /* Table for Book*/
    numberPages     INT          NOT NULL, /*Column for number of pages in book*/
 CONSTRAINT books_pk  PRIMARY KEY (gName, bTitle), /*Group name and book title are primary keys*/
 CONSTRAINT book_fk   FOREIGN KEY(gName) REFERENCES writingGroup(gName), /*Group name is foreign key*/
-CONSTRAINT book_uk1  UNIQUE (bTitle), /*Book title has a uniqueness constraint as a candidate key*/
-CONSTRAINT book_uk2  UNIQUE (pName)); /*Publisher name has a uniqueness constraint as a candidate key*/
-
-
-CREATE TABLE Publisher ( /* Table for Publisher*/
-   pName      VARCHAR(100) NOT NULL, /*Column for publisher name*/
-   pAddress   VARCHAR(100) NOT NULL, /*Column for publisher address*/
-   pPhone     VARCHAR(100) NOT NULL, /*Column for publisher phone number*/
-   pEmail     VARCHAR(100) NOT NULL, /*Column for publisher email address*/
-CONSTRAINT publisher_pk  PRIMARY KEY (pName), /*Publisher name is primary key*/
-CONSTRAINT publisher_fk  FOREIGN KEY(pName) REFERENCES Book(pName)); /*Publisher name is foreign key*/
+CONSTRAINT book_fk_2 FOREIGN KEY (pName) REFERENCES Publisher(pName),
+CONSTRAINT book_uk1  UNIQUE (bTitle)); /*Publisher name has a uniqueness constraint as a candidate key*/
 
 
 INSERT INTO writingGroup (gName, headWriter, yearFounded, subject) VALUES
@@ -42,3 +42,16 @@ INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
     ('Computer Science Publishers', '10101 Binary Blvd', '101-010-1010', 'cspublishers@binary.com'),
     ('Buisness Publishing House', '500 Wall Street', '987-654-3210', 'bsh@ws.com'),
     ('Art Press', '4114 Mural Way', '908-123-4567', 'art@press.com');
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150);
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Information Systems Group', 'Early Concepts of System Design', 'Buisness Publishing House', 2017, 100);
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publishers', 2018, 600);
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Algorithms Group', 'Solving', 'Art Press', 2018, 600);
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES
+    ('Database Group', 'Database Fundamentals in SQL', 'Computer Science Publishers', 2020, 400);
+
+INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Graphic Arts Group', 'Weed', 'Art Press', 2019, 420 );
