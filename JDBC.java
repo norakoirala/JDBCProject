@@ -23,9 +23,9 @@ public class JDBC {
     static String DB_URL = "jdbc:derby://localhost:1527/";
 
     
-    
     public static void main(String[] args) {
         
+        userConnectPrompt();
         establishConnection();
         
         Menu();
@@ -48,6 +48,7 @@ public class JDBC {
             return input;
     }
     
+    //Sets up connection to database with given values set
     public static void establishConnection(){
         
         //Constructing the database URL connection string
@@ -68,6 +69,7 @@ public class JDBC {
         
     }
     
+    //Lets the user specify the connection variables
     public static void userConnectPrompt(){
         
         System.out.print("Name of the database (not the user account): ");
@@ -78,6 +80,7 @@ public class JDBC {
         PASS = in.nextLine();
     }
     
+    //Executes sql that returns a table
     public static void exeQuery(String sql){
         try{
             Statement stmt = conn.createStatement();
@@ -97,6 +100,7 @@ public class JDBC {
         }
     }
     
+    //Executes sql that modifies a table
     public static void exeUpdate(String sql){
         try{
             Statement stmt = conn.createStatement();
@@ -110,6 +114,7 @@ public class JDBC {
         }
     }
     
+    //Print a table given results
     public static void printData(ResultSet rs, int columnCount) throws SQLException {
         while(rs.next()){
                 System.out.print("Row: "+rs.getRow());
@@ -121,6 +126,7 @@ public class JDBC {
             }
     }
     
+    //Menu prompt for the user 
     public static void Menu(){
         
         
@@ -150,6 +156,7 @@ public class JDBC {
                 case 9: removeBook(); break;
             }
             
+            //dont exe if sql is not set
             if(sql != null)
                 exeQuery(sql);
         }
@@ -159,6 +166,7 @@ public class JDBC {
         
     }
     
+    //List data of a table
     public static String listDataOfTable(String tableName){
         
         in.nextLine();
@@ -167,10 +175,17 @@ public class JDBC {
         System.out.print("Enter "+ tableName+" Name: ");
         name=in.nextLine();
         
+        if(tableName.equals("Book")){
+            System.out.print("Enter Group Name: ");
+            String gName = in.nextLine();
+            return "Select headWriter,yearFounded,subject FROM " + name +"\'"+ "AND gname = \'"+gName+"\'";
+        }
+        
         return "Select headWriter,yearFounded,subject FROM "+ tableName +" WHERE gName  = "+"\'"+name+"\'";
         
     }
     
+    //Prompts the user to insert a book
     public static void insertBook(){
         in.nextLine();
         
@@ -207,6 +222,7 @@ public class JDBC {
         
     }
     
+    //Prompts the user to enter a new publisher
     public static void newPublisher(String pName){
         String sql="";
         
@@ -231,6 +247,7 @@ public class JDBC {
         exeUpdate(sql);
     }
     
+    //Creates a publisher and switches all books from another given publisher
     public static void createSwitchPublisher(){
         in.nextLine();
         
@@ -249,6 +266,7 @@ public class JDBC {
         exeUpdate(sql);
     }
     
+    //Removes a book given primary key
     public static void removeBook(){
         String sql="";
         
