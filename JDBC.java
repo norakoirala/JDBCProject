@@ -86,7 +86,6 @@ public class JDBC {
      */
     public static ArrayList displayData(String sql) {
         ArrayList<String> str = new ArrayList<String>();
-        
         try{
             //executing statement 
             Statement state = conn.createStatement();
@@ -191,8 +190,8 @@ public class JDBC {
                                 //closing connections
                                 pState.close();
                                 rs.close();
-                            } catch (SQLException ex) {
-                                System.out.println("Invalid Writing Group! Writing Group does not exist.");
+                            } catch (SQLException se) {
+                                System.out.println("SELECT Error: " + se.getErrorCode());
                             }
                         }   
                     //if user does not view or exit, selection is invalid
@@ -209,7 +208,7 @@ public class JDBC {
                     list = displayData(sql);
                     
                     //submenu is outputted and takes input
-                    System.out.println("\n1) View Publisher Info \n2) Move Publishers \n3) Exit Publisher Menu\n\nSelection: ");
+                    System.out.print("\n1) View Publisher Info \n2) Move Publishers \n3) Exit Publisher Menu\n\nSelection: ");
                     subchoice = in.nextInt();
                     in.nextLine();
                     
@@ -221,7 +220,7 @@ public class JDBC {
                         
                         //checks if publisher exists and outputs information
                         if(!list.contains(pName)) {
-                            System.out.println("Invalid Publisher! Publisher does not exist.");
+                          System.out.println("Invalid Publisher! Publisher does not exist.");
                         } else {
                             try {
                                 //prepared statement executed 
@@ -237,18 +236,19 @@ public class JDBC {
                                 //closing connections
                                 pState.close();
                                 rs.close();
-                            } catch (SQLException ex) {
-                                System.out.println("Invalid Publisher! Publisher does not exist.");
+                            } catch (SQLException se) {
+                                System.out.println("SELECT Error: " + se.getErrorCode());
                             }
-                        }
+                       }
                     //switching publishers is selected
                     } else if (subchoice == 2){
-                        //verifies if publisher is duplicate or not 
                         System.out.print("Enter New Publisher Name: ");
                         String pName = in.nextLine();
-                        if(list.contains(pName)) {
-                            System.out.println("Invalid Publsiher Name! Publisher cannot be created.");
-                        } else {
+                        
+                        //verifies if publisher is duplicate or not 
+                         if(list.contains(pName)) {
+                           System.out.println("Invalid Publsiher! Publisher already exists.");
+                            } else {
                             //creates new publisher with given info
                             System.out.print("Enter Publisher Address: ");
                             String pAddress = in.nextLine();
@@ -267,13 +267,15 @@ public class JDBC {
                                 pState.executeUpdate();
                                 conn.commit();
                             } catch (SQLException se) {
-                                System.out.println("Invalid entry! Publisher cannot be created.");
+                                System.out.println("INSERT Error: " + se.getErrorCode());
                             }
                         }
-                        
                         //gets information about old publisher to make the switch
                         System.out.print("Enter Old Publisher: ");
                         String oldPName = in.nextLine();
+                        if(!list.contains(oldPName)) {
+                            System.out.println("Invalid Publisher! Publisher does not exist.");
+                        }
                         try {
                             String state = "UPDATE Book SET pName  = ? WHERE pName = ?";
                             PreparedStatement pState = conn.prepareStatement(state);
@@ -282,11 +284,11 @@ public class JDBC {
                             pState.executeUpdate();
                             conn.commit();
                         } catch (SQLException se) {
-                            System.out.println("Invalid entry! Publisher cannot be switched.");
+                            System.out.println("UPDATE Error: " + se.getErrorCode());
                         }
-                        
                         //Validation message
                         System.out.println("Switch sucessful!");
+                        
                     //if user does not view or switch or exit, selection is invalid
                     } else if (subchoice != 3) {
                         System.out.println("Invalid Selection!");
@@ -297,30 +299,31 @@ public class JDBC {
                     //TO DO: STILL NEEDS WORK
                     sql = "SELECT bTitle FROM Book"; 
                     list = displayData(sql);
-                    System.out.println("\n1) View Book Info \n2) Add Book \n3) Remove Book \n4) Exit Books Menu\n\nSelection: ");
+                    System.out.print("\n1) View Book Info \n2) Add Book \n3) Remove Book \n4) Exit Books Menu\n\nSelection: ");
                     subchoice = in.nextInt();
                     in.nextLine();
                     System.out.println();
                     if (subchoice == 1) {
                         System.out.print("\nBook Name: ");
-                        String bName = in.nextLine();
-                        System.out.print("Group Name: ");
-                        String gName = in.nextLine();
-                        if (!list.contains(bName)) {
+                        String bTitle = in.nextLine();
+                        if (!list.contains(bTitle)) {
                             System.out.println("Invalid Book! Book does not exist.");
                         } else {
+                            System.out.print("Group Name: ");
+                            String gName = in.nextLine();
                             try {
-                                String state = "Select pName, yearPublished, numberPages FROM Publisher WHERE bName = ? AND gName = ?";
+                                String state = "Select pName, yearPublished, numberPages FROM Book WHERE bTitle = ? AND gName = ?";
                                 PreparedStatement pState = conn.prepareStatement(state);
-                                pState.setString(1, bName);
+                                pState.setString(1, bTitle);
                                 pState.setString(2, gName);
                                 ResultSet rs = pState.executeQuery();
                                 conn.commit();
                                 displayInfo(rs);
                                 pState.close();
                                 rs.close();
-                            } catch (SQLException ex) {
-                                System.out.println("Invalid Publisher! Publisher does not exist.");
+                            } catch (SQLException se) {
+                                System.out.println(se.getErrorCode());
+                                System.out.println("Invalid Group! Group does not exist.");
                             }
                         }
                     } else if (subchoice == 2) {
@@ -345,6 +348,7 @@ public class JDBC {
                             pState.executeUpdate();
                             conn.commit();
                         } catch (SQLException se) {
+                            System.out.println(se.getErrorCode());
                             System.out.println("Invalid entry! Book cannot be inserted.");
                         }
                     } else if (subchoice == 3) {
@@ -360,6 +364,7 @@ public class JDBC {
                           pState.executeUpdate();
                           conn.commit();
                         } catch (SQLException se) {
+                            System.out.println(se.getErrorCode());
                             System.out.println("Invalid entry! Book cannot be removed!");
                         }
                     } else if (subchoice != 4) {
@@ -371,7 +376,7 @@ public class JDBC {
                     break;
             }
             
-            //if user has not exited from sub-menu, give final option to exit
+            //if the user hasnt exited out, give option to exit
             if(!exit) {
                 System.out.print("\n1) Return to Main Menu \n2) Exit\n\nSelection: ");
                 choice = in.nextInt();
@@ -385,6 +390,7 @@ public class JDBC {
         try {
             conn.close();
         } catch (SQLException se) {
+            System.out.println(se.getErrorCode());
         } 
        
         System.out.println("\nGoodbye!");
@@ -392,3 +398,4 @@ public class JDBC {
     
 }
     
+ 
