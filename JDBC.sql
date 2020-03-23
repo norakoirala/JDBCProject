@@ -31,19 +31,19 @@ INSERT INTO writingGroup (gName, headWriter, yearFounded, subject) VALUES
     ('Information Systems Group', 'Robert McClean', 2015, 'System Design'),
     ('Algorithms Group', 'Darin Goldstein', 2010, 'NP Hard Problems'),
     ('Graphic Arts Group', 'Tor Hovind', 2012, 'User Interface'),
-    ('Cyber Security Group', 'Louis Uuh', 2017,'Encryption')
+    ('Cyber Security Group', 'Louis Uuh', 2017,'Encryption'),
     ('Health Group', 'Gail Farmer', 2000, 'Nursing');
+
+INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
+    ('Computer Science Publishers', '10101 Binary Blvd', '101-010-1010', 'cspublishers@binary.com'),
+    ('Buisness Publishing House', '500 Wall St', '987-654-3210', 'bsh@ws.com'),
+    ('Art Press', '4114 Mural Way', '908-123-4567', 'art@press.com'),
+    ('Health Pub', '911 Help Ln', '911-911-9119', 'help@health.com');
 
 INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES
     ('Database Group', 'Database Fundamentals in SQL', 'Computer Science Publishers', 2020, 400),
     ('Information Systems Group', 'Early Concepts of System Design', 'Buisness Publishing House', 2017, 100),
     ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publishers', 2018, 600),
-    ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150)
-    ('Cyber Security Group', 'RSA', 'Computer Science Publishers', 2018, 1000)
+    ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150),
+    ('Cyber Security Group', 'RSA', 'Computer Science Publishers', 2018, 1000),
     ('Health Group', 'Coronavirus', 'Health Pub', 2020, 1020);
-
-INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
-    ('Computer Science Publishers', '10101 Binary Blvd', '101-010-1010', 'cspublishers@binary.com'),
-    ('Buisness Publishing House', '500 Wall St', '987-654-3210', 'bsh@ws.com'),
-    ('Art Press', '4114 Mural Way', '908-123-4567', 'art@press.com')
-    ('Health Pub', '911 Help Ln', '911-911-9119', 'help@health.com');
