@@ -41,7 +41,7 @@ INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
                              
 INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES
     ('Database Group', 'Database Fundamentals in SQL', 'Computer Science Publishers', 2020, 400),
-    ('Information Systems Group', 'Early Concepts of System Design', 'Buisness Publishing House', 2017, 100),
+    ('Information Systems Group', 'Early Concepts of System Design', 'Business Publishing House', 2017, 100),
     ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publishers', 2018, 600),
     ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150),
     ('Cyber Security Group', 'RSA', 'Computer Science Publishers', 2018, 1000),
