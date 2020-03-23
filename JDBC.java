@@ -86,7 +86,7 @@ public class JDBC {
                 for(int i =1; i<=columnCount; i++){
                     output += String.format("%-5s%-15s", " ", dispNull(rmd.getColumnName(i)));
                 }
-                output += "\n-------------------------------------------------------------------------------------------\n";
+                output += "\n------------------------------------------------------------------------------------------\n";
                 //formatting rows
                 do {
                     output += String.format("%-5s", Integer.toString(rs.getRow()));
@@ -148,7 +148,7 @@ public class JDBC {
                 case 1: //List All Writing Groups
                     try { 
                         //executes SELECT statement
-                        state = "SELECT gName FROM writingGroup";
+                        state = "SELECT gName FROM writingGroup ORDER BY gName ASC";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
@@ -156,7 +156,7 @@ public class JDBC {
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 1!");
+                        System.out.println("\nError with Option 1!");
                         se.printStackTrace();
                     }
                     break;
@@ -176,14 +176,14 @@ public class JDBC {
                         displayData(rs);
                         pState.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 2!");
+                        System.out.println("\nError with Option 2!");
                         se.printStackTrace();
                     }
                     break;
                 case 3: ////List All Publishers
                     try {
                         //executes SELECT statement
-                        state = "SELECT pName from Publisher";
+                        state = "SELECT pName from Publisher ORDER BY pName ASC";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
@@ -191,7 +191,7 @@ public class JDBC {
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 3!");
+                        System.out.println("\nError with Option 3!");
                         se.printStackTrace();
                     }
                     break;
@@ -211,14 +211,14 @@ public class JDBC {
                         displayData(rs);
                         pState.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 4!");
+                        System.out.println("\nError with Option 4!");
                         se.printStackTrace();
                     }
                     break;
                 case 5: ////List All Books
                     try {
                         //executes SELECT statement
-                        state = "SELECT bTitle from Book";
+                        state = "SELECT bTitle from Book ORDER BY btitle ASC";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
@@ -226,7 +226,7 @@ public class JDBC {
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 5!");
+                        System.out.println("\nError with Option 5!");
                         se.printStackTrace();
                     }
                     break;
@@ -249,7 +249,7 @@ public class JDBC {
                         displayData(rs);
                         pState.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 6!");
+                        System.out.println("\nError with Option 6!");
                         se.printStackTrace();
                     }
                     break;
@@ -278,23 +278,23 @@ public class JDBC {
                         
                         //if lines are changed then user is informed 
                         if (pState.executeUpdate() != 0) {
-                           System.out.println("Book inserted!");
+                           System.out.println("\nBook inserted!");
                         } else {
-                           System.out.println("Book cannot be inserted!");
+                           System.out.println("\nBook cannot be inserted!");
                         }
                         
                         //close connection
                         pState.close();
                     } catch (SQLException se) { 
                         error = se.getMessage(); //gets error message
-                        if (error.contains("'BOOK_FK'")) { //if book_fk is invalid
-                            System.out.println("Invalid book name!");
-                        } else if (error.contains("'BOOK_FK_2'")) { //if book_fk_2 is invalid
-                            System.out.println("Invalid publisher name!");
+                        if (error.contains("'BOOK_FK_2'")) { //if book_fk_2 is invalid
+                            System.out.println("\nInvalid publisher name!");
+                        } else if (error.contains("'BOOK_FK")) { //if book_fk is invalid
+                            System.out.println("\nInvalid group name!");
                         } else if (error.contains("duplicate")) { //if there is duplicates
-                            System.out.println("Cannot have duplicate book! ");
+                            System.out.println("\nCannot have duplicate book! ");
                         } else {
-                            System.out.println("Error with Option 7!");
+                            System.out.println("\nError with Option 7!");
                             se.printStackTrace();
                         }
                     } 
@@ -315,15 +315,15 @@ public class JDBC {
                         
                         //if lines are changed then user is informed 
                         if (pState.executeUpdate() != 0) {
-                           System.out.println("Book removed!");
+                           System.out.println("\nBook removed!");
                         } else {
-                            System.out.println("Book doesn't exist!");
+                            System.out.println("\nBook doesn't exist!");
                         }
                         
                         //close connection
                         pState.close();
                     } catch (SQLException se) {
-                        System.out.println("Error with Option 8!");
+                        System.out.println("\nError with Option 8!");
                         se.printStackTrace();
                     } 
                     break;
@@ -349,7 +349,7 @@ public class JDBC {
                         
                         if (pState.executeUpdate() != 0) {
                             //if lines are changed then publisher created
-                            System.out.println("Publisher created!");
+                            System.out.println("\nPublisher created!");
                             
                             //ask user for input 
                             System.out.print("\nEnter Old Publisher: ");
@@ -362,10 +362,10 @@ public class JDBC {
                             pState.setString(2, oldPName);
                             if (pState.executeUpdate() != 0) { 
                                 //if lines are changed then switched 
-                                System.out.println("Switch sucessful!");
+                                System.out.println("\nSwitch sucessful!");
                             } else { 
                                 //else new publisher is deleted
-                                System.out.println("Invalid Publisher! Cannot switch publishers.");
+                                System.out.println("\nInvalid Publisher! Cannot switch publishers.");
                                 
                                 //executes prepared statement
                                 state = "DELETE FROM Publisher WHERE pName = ?";
@@ -380,9 +380,9 @@ public class JDBC {
                     } catch (SQLException se) {
                         error = se.getMessage(); //gets error message 
                         if (error.contains("duplicate")) { //if duplicate
-                            System.out.println("Cannot have duplicate publishers!");
+                            System.out.println("\nCannot have duplicate publishers!");
                         } else {
-                            System.out.println("Error with option 9!");
+                            System.out.println("\nError with option 9!");
                         }
                     }
                     break;
@@ -390,7 +390,7 @@ public class JDBC {
                     exit = true; 
                     break;
                 default: //Invalid
-                    System.out.println("Invalid Selection!");
+                    System.out.println("\nInvalid Selection!");
                     break;
             }
 
@@ -406,14 +406,14 @@ public class JDBC {
                         exit = true;
                         break;
                     default:
-                        System.out.println("Invalid Selection!");
+                        System.out.println("\nInvalid Selection!");
                         break;
                 }
             } 
         } while (!exit);
         
         //exit message
-        System.out.println("Goodbye!");
+        System.out.println("\nGoodbye!");
     }
     
     public static void main(String[] args) {
