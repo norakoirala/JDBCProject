@@ -118,10 +118,10 @@ public class JDBC {
         Statement st;
         PreparedStatement pState;
         ResultSet rs;
-        String output;
         String gName;
         String pName;
         String bTitle;
+        String error;
         Boolean exit = false; 
         
         //runs til user exits
@@ -129,11 +129,11 @@ public class JDBC {
             //displays menu
             System.out.println("\nMenu:");
             System.out.println("1) List All Writing Groups");
-            System.out.println("2) List Data Of Specific Writing Group");
+            System.out.println("2) List Specific Writing Group Data");
             System.out.println("3) List All Publishers");
-            System.out.println("4) List Data Of Specific Publisher");
+            System.out.println("4) List Specific Publisher Data");
             System.out.println("5) List All Books");
-            System.out.println("6) List Data Of Specific Book");
+            System.out.println("6) List Specific Book Data");
             System.out.println("7) Add Book");
             System.out.println("8) Remove Book");
             System.out.println("9) Switch Publishers");
@@ -145,11 +145,14 @@ public class JDBC {
             in.nextLine();
             
            switch(choice) {
-                case 1: 
-                    try {
+                case 1: //List All Writing Groups
+                    try { 
+                        //executes SELECT statement
                         state = "SELECT gName FROM writingGroup";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
+                        
+                        //display and close connections
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
@@ -157,14 +160,19 @@ public class JDBC {
                         se.printStackTrace();
                     }
                     break;
-                case 2: 
+                case 2: //List Specific Writing Group Data
                     try {
+                        //asks user for input
                         System.out.print("\nWriting Group Name: ");
                         gName = in.nextLine();
+                        
+                        //executes prepared statement
                         state = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName = ?";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, gName);
                         rs = pState.executeQuery();
+                        
+                        //display and close connections
                         displayData(rs);
                         pState.close();
                     } catch (SQLException se) {
@@ -172,11 +180,14 @@ public class JDBC {
                         se.printStackTrace();
                     }
                     break;
-                case 3: 
+                case 3: ////List All Publishers
                     try {
+                        //executes SELECT statement
                         state = "SELECT pName from Publisher";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
+                        
+                        //display and close connections
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
@@ -184,14 +195,19 @@ public class JDBC {
                         se.printStackTrace();
                     }
                     break;
-                case 4:
+                case 4: //List Specific Publisher Data
                     try {
+                        //ask for user input 
                         System.out.print("\nPublisher Name: ");
                         pName = in.nextLine();
+                        
+                        //executes prepared statement
                         state = "SELECT pAddress, pPhone, pEmail FROM Publisher WHERE pName = ?";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, pName);
                         rs = pState.executeQuery();
+                        
+                        //display and close connections
                         displayData(rs);
                         pState.close();
                     } catch (SQLException se) {
@@ -199,11 +215,14 @@ public class JDBC {
                         se.printStackTrace();
                     }
                     break;
-                case 5: 
+                case 5: ////List All Books
                     try {
+                        //executes SELECT statement
                         state = "SELECT bTitle from Book";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
+                        
+                        //display and close connections
                         displayData(rs);
                         st.close();
                     } catch (SQLException se) {
@@ -211,43 +230,44 @@ public class JDBC {
                         se.printStackTrace();
                     }
                     break;
-                case 6: 
-                    /*** 
+                case 6: //List Specific Book Data
                     try {
-                        System.out.print("\nBook Name: ");
+                        //asks user for input 
+                        System.out.print("\nBook Title: ");
                         bTitle = in.nextLine();
                         System.out.print("Group Name: ");
                         gName = in.nextLine();
+                        
+                        //executes prepared statement 
                         state = "SELECT pName, yearPublished, numberPages FROM Book WHERE bTitle = ? AND gName = ?";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, bTitle);
                         pState.setString(2, gName);
                         rs = pState.executeQuery();
-                        output = displayData(rs);
+                        
+                        //display and close connections
+                        displayData(rs);
                         pState.close();
-                    } catch (SQLIntegrityConstraintViolationException se) {
-                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
-                            System.out.println("Invalid Book Name!");
-                        } else if (se.getMessage().contains("book_fk_2")) {
-                            System.out.println("Invalid Publisher Name!");
-                        } else {
-                            System.out.println("Error getting book information!");
-                        }
-                    } ***/
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 6!");
+                        se.printStackTrace();
+                    }
                     break;
-                case 7: 
-                    /***
+                case 7: //Add Book
                     try {
+                        //asks user for input
+                        System.out.print("\nEnter Title: ");
+                        bTitle = in.nextLine();
                         System.out.print("Enter Group Name: ");
                         gName = in.nextLine();
-                        System.out.print("Enter Title: ");
-                        bTitle = in.nextLine();
                         System.out.print("Enter Publisher Name: ");
                         pName  = in.nextLine(); 
                         System.out.print("Enter Year Published: ");
                         int year = in.nextInt();
                         System.out.print("Enter Number Of Pages: ");
                         int pages = in.nextInt();
+                        
+                        ////executes prepared statement 
                         state = "INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES (?, ?, ?, ?, ?)";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, gName);
@@ -255,85 +275,122 @@ public class JDBC {
                         pState.setString(3, pName);
                         pState.setInt(4, year);
                         pState.setInt(5, pages);
-                        pState.executeUpdate();
-                        pState.close();
-                        System.out.println("Book inserted!");
-                    } catch (SQLIntegrityConstraintViolationException se) {
-                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
-                            System.out.println("Invalid Book Name!");
-                        } else if (se.getMessage().contains("book_fk_2")) {
-                            System.out.println("Invalid Publisher Name!");
-                        } else if (se.getMessage().contains("book_uk1")) {
-                            System.out.println("Cannot have duplicate book!");
+                        
+                        //if lines are changed then user is informed 
+                        if (pState.executeUpdate() != 0) {
+                           System.out.println("Book inserted!");
                         } else {
-                            System.out.println("Error inserting book!");
+                           System.out.println("Book cannot be inserted!");
                         }
-                    }
-                     **/
+                        
+                        //close connection
+                        pState.close();
+                    } catch (SQLException se) { 
+                        error = se.getMessage(); //gets error message
+                        if (error.contains("'BOOK_FK'")) { //if book_fk is invalid
+                            System.out.println("Invalid book name!");
+                        } else if (error.contains("'BOOK_FK_2'")) { //if book_fk_2 is invalid
+                            System.out.println("Invalid publisher name!");
+                        } else if (error.contains("duplicate")) { //if there is duplicates
+                            System.out.println("Cannot have duplicate book! ");
+                        } else {
+                            System.out.println("Error with Option 7!");
+                            se.printStackTrace();
+                        }
+                    } 
                     break;
-                case 8: 
-                    /***
+                case 8: //Remove Book
                     try {
-                    *   System.out.print("Enter Book title: ");
+                        //ask user for input
+                        System.out.print("\nEnter Book Title: ");
                         bTitle = in.nextLine();
                         System.out.print("Enter Group Name: ");
                         gName = in.nextLine();
+                        
+                        //executes prepared statement
                         state = "DELETE FROM Book WHERE bTitle = ? AND gname = ?";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, bTitle);
                         pState.setString(2, gName);
-                        pState.executeUpdate();
-                        pState.close();
-                        System.out.println("Book removed!");
-                    } catch (SQLIntegrityConstraintViolationException se) {
-                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
-                            System.out.println("Invalid Book Name!");
-                        } else if (se.getMessage().contains("book_fk_2")) {
-                            System.out.println("Invalid Publisher Name!");
+                        
+                        //if lines are changed then user is informed 
+                        if (pState.executeUpdate() != 0) {
+                           System.out.println("Book removed!");
                         } else {
-                            System.out.println("Error removing book!");
+                            System.out.println("Book doesn't exist!");
                         }
-                    } **/
+                        
+                        //close connection
+                        pState.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 8!");
+                        se.printStackTrace();
+                    } 
                     break;
-                case 9: 
-                    //NO CHECK FOR UNIQUE TABLE
-                    System.out.print("Enter New Publisher Name: ");
-                    pName = in.nextLine();
+                case 9: //Switch Publishers
                     try {
+                        //ask user for input
+                        System.out.print("\nEnter New Publisher Name: ");
+                        pName = in.nextLine();
                         System.out.print("Enter Publisher Address: ");
                         String pAddress = in.nextLine();
                         System.out.print("Enter Publisher Phone Number: ");
                         String pPhone = in.nextLine();
                         System.out.print("Enter Publisher Email: ");
                         String pEmail = in.nextLine();
+                        
+                        ////executes prepared statement
                         state = "INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES (?, ?, ?, ?)";
                         pState = conn.prepareStatement(state);
                         pState.setString(1, pName);
                         pState.setString(2, pAddress);
                         pState.setString(3, pPhone);
                         pState.setString(4, pEmail);
-                        pState.executeUpdate();
+                        
+                        if (pState.executeUpdate() != 0) {
+                            //if lines are changed then publisher created
+                            System.out.println("Publisher created!");
+                            
+                            //ask user for input 
+                            System.out.print("\nEnter Old Publisher: ");
+                            String oldPName = in.nextLine();
+                            state = "UPDATE Book SET pName  = ? WHERE pName = ?";
+                            
+                            //executes prepared statement
+                            pState = conn.prepareStatement(state);
+                            pState.setString(1, pName);
+                            pState.setString(2, oldPName);
+                            if (pState.executeUpdate() != 0) { 
+                                //if lines are changed then switched 
+                                System.out.println("Switch sucessful!");
+                            } else { 
+                                //else new publisher is deleted
+                                System.out.println("Invalid Publisher! Cannot switch publishers.");
+                                
+                                //executes prepared statement
+                                state = "DELETE FROM Publisher WHERE pName = ?";
+                                pState = conn.prepareStatement(state);
+                                pState.setString(1, pName);
+                                pState.executeUpdate();
+                            }
+                        }
+                        
+                        //close connection
                         pState.close();
                     } catch (SQLException se) {
-                        System.out.println("INSERT Error: " + se.getErrorCode());
-                    }
-                    
-                    //gets information about old publisher to make the switch
-                    try {
-                        System.out.print("Enter Old Publisher: ");
-                        String oldPName = in.nextLine();
-                        state = "UPDATE Book SET pName  = ? WHERE pName = ?";
-                        pState = conn.prepareStatement(state);
-                        pState.setString(1, pName);
-                        pState.setString(2, oldPName);
-                        pState.executeUpdate();
-                        System.out.println("Switch sucessful!");
-                    } catch (SQLException se) {
-                        System.out.println("UPDATE Error: " + se.getErrorCode());
+                        error = se.getMessage(); //gets error message 
+                        if (error.contains("duplicate")) { //if duplicate
+                            System.out.println("Cannot have duplicate publishers!");
+                        } else {
+                            System.out.println("Error with option 9!");
+                        }
                     }
                     break;
-                case 10: 
+                case 10: //User exits
                     exit = true; 
+                    break;
+                default: //Invalid
+                    System.out.println("Invalid Selection!");
                     break;
             }
 
@@ -355,6 +412,7 @@ public class JDBC {
             } 
         } while (!exit);
         
+        //exit message
         System.out.println("Goodbye!");
     }
     
