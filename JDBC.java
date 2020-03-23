@@ -1,10 +1,8 @@
 package jdbc;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class JDBC {
     //  Database credentials
@@ -19,19 +17,12 @@ public class JDBC {
     static Connection conn = null; //initialize the connection
     
     
-    static final String displayFormat="%-5s%-15s%-15s%-15s\n";
+    static final String displayFormat = "%-5s%-15s%-15s%-15s\n";
     
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.apache.derby.jdbc.ClientDriver";
     static String DB_URL = "jdbc:derby://localhost:1527/";
-
-    
-    public static void main(String[] args) {
-        userConnectPrompt();
-        establishConnection();
-        Menu();
-    }
-    
+        
     /**
      * Formats string if attribute is null
      * @param input - Takes in string to format 
@@ -54,14 +45,11 @@ public class JDBC {
         
         try{
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            
             conn = DriverManager.getConnection(DB_URL);
-        }
-        
-        catch(SQLException se) {
-           se.printStackTrace();
-        }
-        catch(Exception e){
+        } catch(SQLException se) {
+            System.out.println("Error establishing connection!");
+            se.printStackTrace();
+        } catch(Exception e){
             e.printStackTrace();
         }
         
@@ -81,321 +69,298 @@ public class JDBC {
     
     /**
      * Displays data for tables
-     * @param sql - takes in SQL Select statement 
-     * @return list - used to double check duplicates / validation 
+     * @param rs - takes in result set
      */
-    public static ArrayList displayData(String sql) {
-        ArrayList<String> str = new ArrayList<String>();
+    public static void displayData(ResultSet rs) {
+        String output = "\n";
         try{
-            //executing statement 
-            Statement state = conn.createStatement();
-            ResultSet rs = state.executeQuery(sql);
-            
-            //formatting output
+            //executing statement
             ResultSetMetaData rmd = rs.getMetaData();
             int columnCount = rmd.getColumnCount();
-            String s = String.format("\n%-5s%-15s", " ", rmd.getColumnName(1));
-            System.out.println(s + "\n----------------------------------------------------");
-            while(rs.next()){
+            
+            if(!rs.next()) {
+                //checking if table is empty
+                output = "Invalid entry! " + rmd.getTableName(columnCount) + " does not exist.";
+            } else {
+                //formatting table header 
                 for(int i =1; i<=columnCount; i++){
-                    System.out.printf("%-5s%-15s\n", Integer.toString(rs.getRow()), rs.getString(i));
-                    str.add(rs.getString(i)); 
+                    output += String.format("%-5s%-15s", " ", dispNull(rmd.getColumnName(i)));
                 }
+                output += "\n--------------------------------------------------------\n";
+                //formatting rows
+                do {
+                    output += String.format("%-5s", Integer.toString(rs.getRow()));
+                    for(int i =1; i<=columnCount; i++){
+                        output += String.format("%-15s", dispNull(rs.getString(i)));
+                    }
+                    output += "\n";
+                } while (rs.next());
             }
+
             //closing connections
-            state.close();
             rs.close();
         } catch(SQLException se){
-            System.out.println("Invalid Table! Table does not exist");
-        }
+            System.out.println("Error displaying table!");
+            se.printStackTrace();
+        } 
         
-        return str;
+        //prints table
+        System.out.println(output);
     }
-    
+
     /**
-     * Takes in result set to format info 
-     * @param rs 
-     */
-    public static void displayInfo(ResultSet rs) {
-        try {
-            ResultSetMetaData rmd = rs.getMetaData();
-            int columnCount = rmd.getColumnCount();
-            String s = String.format(displayFormat, " ", rmd.getColumnName(1), rmd.getColumnName(2), rmd.getColumnName(3));
-            System.out.println(s + "----------------------------------------------------");
-            while(rs.next()){
-                String rowStr = "";
-                for(int i=1; i<=columnCount; i++){
-                    rowStr = rowStr +  rs.getString(i) + "!";
-                }
-                String[] rowStrArr = rowStr.split("!");
-                System.out.printf(displayFormat, dispNull(Integer.toString(rs.getRow())), dispNull(rowStrArr[0]), dispNull(rowStrArr[1]), dispNull(rowStrArr[2]));
-            }
-        } catch (SQLException ex) {
-            System.out.println("Error with displaying information!");
-        }
-    }
-    
-    
-    /**
-     * Menu for the user
-     */
+    * Menu for the user
+    */
     public static void Menu() {
-        Boolean exit = false;
-        //loops til user exits
+        //init variables  
+        int choice;
+        String state; 
+        Statement st;
+        PreparedStatement pState;
+        ResultSet rs;
+        String output;
+        String gName;
+        String pName;
+        String bTitle;
+        Boolean exit = false; 
+        
+        //runs til user exits
         do {
-            //displays choices user has and takes input
+            //displays menu
             System.out.println("\nMenu:");
-            System.out.print("1)Writing Groups \n2)Publishers \n3)Books \n4)Exit \n\nSelection: ");
-            int choice = in.nextInt();
+            System.out.println("1) List All Writing Groups");
+            System.out.println("2) List Data Of Specific Writing Group");
+            System.out.println("3) List All Publishers");
+            System.out.println("4) List Data Of Specific Publisher");
+            System.out.println("5) List All Books");
+            System.out.println("6) List Data Of Specific Book");
+            System.out.println("7) Add Book");
+            System.out.println("8) Remove Book");
+            System.out.println("9) Switch Publishers");
+            System.out.println("10) Exit");
+            System.out.print("\nSelection: ");
+            
+            //takes in input
+            choice = in.nextInt();
             in.nextLine();
             
-            //initializing variables
-            String sql;
-            int subchoice;
-            ArrayList<String> list;
-
-            switch(choice){
-                //Writing Groups is selected 
+           switch(choice) {
                 case 1: 
-                    //displays all Writing Groups
-                    sql = "SELECT gName FROM writingGroup"; 
-                    list = displayData(sql);
-                    
-                    //submenu is outputted and takes input
-                    System.out.print("\n1) View Writing Group Info \n2) Exit Writing Group Menu\n\nSelection: ");
-                    subchoice = in.nextInt();
-                    in.nextLine();
-                    
-                    //Viewing specific info is selected
-                    if(subchoice == 1) {
-                        System.out.print("\nWriting Group Name: ");
-                        String gName = in.nextLine();
-                        System.out.println();
-                        
-                        //check if writing group exists and outputs information
-                        if(!list.contains(gName)) {
-                            System.out.println("Invalid Writing Group! Writing Group does not exist.");
-                        } else {
-                            try {
-                                //prepared statement executed
-                                String state = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName = ?";
-                                PreparedStatement pState = conn.prepareStatement(state);
-                                pState.setString(1, gName);
-                                ResultSet rs = pState.executeQuery();
-                                conn.commit();
-                                
-                                //formatting
-                                displayInfo(rs);
-                                
-                                //closing connections
-                                pState.close();
-                                rs.close();
-                            } catch (SQLException se) {
-                                System.out.println("SELECT Error: " + se.getErrorCode());
-                            }
-                        }   
-                    //if user does not view or exit, selection is invalid
-                    } else if (subchoice != 2) {
-                       System.out.println("Invalid Selection!");
+                    try {
+                        state = "SELECT gName FROM writingGroup";
+                        st = conn.createStatement();
+                        rs = st.executeQuery(state);
+                        displayData(rs);
+                        st.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 1!");
+                        se.printStackTrace();
                     }
-                    
                     break;
-                    
-                //Publisher is selected
                 case 2: 
-                    //displays all publishers
-                    sql = "SELECT pName FROM Publisher ";
-                    list = displayData(sql);
-                    
-                    //submenu is outputted and takes input
-                    System.out.print("\n1) View Publisher Info \n2) Move Publishers \n3) Exit Publisher Menu\n\nSelection: ");
-                    subchoice = in.nextInt();
-                    in.nextLine();
-                    
-                    //view specific info is selected 
-                    if(subchoice == 1) {
-                        System.out.print("\nPublisher Name: ");
-                        String pName = in.nextLine();
-                        System.out.println();
-                        
-                        //checks if publisher exists and outputs information
-                        if(!list.contains(pName)) {
-                          System.out.println("Invalid Publisher! Publisher does not exist.");
-                        } else {
-                            try {
-                                //prepared statement executed 
-                                String state = "Select pAddress, pPhone, pEmail FROM Publisher WHERE pName = ?";
-                                PreparedStatement pState = conn.prepareStatement(state);
-                                pState.setString(1, pName);
-                                ResultSet rs = pState.executeQuery();
-                                conn.commit();
-                                
-                                //formatting
-                                displayInfo(rs);
-                                
-                                //closing connections
-                                pState.close();
-                                rs.close();
-                            } catch (SQLException se) {
-                                System.out.println("SELECT Error: " + se.getErrorCode());
-                            }
-                       }
-                    //switching publishers is selected
-                    } else if (subchoice == 2){
-                        System.out.print("Enter New Publisher Name: ");
-                        String pName = in.nextLine();
-                        
-                        //verifies if publisher is duplicate or not 
-                         if(list.contains(pName)) {
-                           System.out.println("Invalid Publsiher! Publisher already exists.");
-                            } else {
-                            //creates new publisher with given info
-                            System.out.print("Enter Publisher Address: ");
-                            String pAddress = in.nextLine();
-                            System.out.print("Enter Publisher Phone Number: ");
-                            String pPhone = in.nextLine();
-                            System.out.print("Enter Publisher Email: ");
-                            String pEmail = in.nextLine();
-                            try {
-                                //executes preparedstatement 
-                                String state = "INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES (?, ?, ?, ?)";
-                                PreparedStatement pState = conn.prepareStatement(state);
-                                pState.setString(1, pName);
-                                pState.setString(2, pAddress);
-                                pState.setString(3, pPhone);
-                                pState.setString(4, pEmail);
-                                pState.executeUpdate();
-                                conn.commit();
-                            } catch (SQLException se) {
-                                System.out.println("INSERT Error: " + se.getErrorCode());
-                            }
-                        }
-                        //gets information about old publisher to make the switch
-                        System.out.print("Enter Old Publisher: ");
-                        String oldPName = in.nextLine();
-                        if(!list.contains(oldPName)) {
-                            System.out.println("Invalid Publisher! Publisher does not exist.");
-                        }
-                        try {
-                            String state = "UPDATE Book SET pName  = ? WHERE pName = ?";
-                            PreparedStatement pState = conn.prepareStatement(state);
-                            pState.setString(1, pName);
-                            pState.setString(2, oldPName);
-                            pState.executeUpdate();
-                            conn.commit();
-                        } catch (SQLException se) {
-                            System.out.println("UPDATE Error: " + se.getErrorCode());
-                        }
-                        //Validation message
-                        System.out.println("Switch sucessful!");
-                        
-                    //if user does not view or switch or exit, selection is invalid
-                    } else if (subchoice != 3) {
-                        System.out.println("Invalid Selection!");
+                    try {
+                        System.out.print("\nWriting Group Name: ");
+                        gName = in.nextLine();
+                        state = "Select headWriter,yearFounded,subject FROM writingGroup WHERE gName = ?";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, gName);
+                        rs = pState.executeQuery();
+                        displayData(rs);
+                        pState.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 2!");
+                        se.printStackTrace();
                     }
-                    
                     break;
-                case 3:
-                    //TO DO: STILL NEEDS WORK
-                    sql = "SELECT bTitle FROM Book"; 
-                    list = displayData(sql);
-                    System.out.print("\n1) View Book Info \n2) Add Book \n3) Remove Book \n4) Exit Books Menu\n\nSelection: ");
-                    subchoice = in.nextInt();
-                    in.nextLine();
-                    System.out.println();
-                    if (subchoice == 1) {
+                case 3: 
+                    try {
+                        state = "SELECT pName from Publisher";
+                        st = conn.createStatement();
+                        rs = st.executeQuery(state);
+                        displayData(rs);
+                        st.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 3!");
+                        se.printStackTrace();
+                    }
+                    break;
+                case 4:
+                    try {
+                        System.out.print("\nPublisher Name: ");
+                        pName = in.nextLine();
+                        state = "SELECT pAddress, pPhone, pEmail FROM Publisher WHERE pName = ?";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, pName);
+                        rs = pState.executeQuery();
+                        displayData(rs);
+                        pState.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 4!");
+                        se.printStackTrace();
+                    }
+                    break;
+                case 5: 
+                    try {
+                        state = "SELECT bTitle from Book";
+                        st = conn.createStatement();
+                        rs = st.executeQuery(state);
+                        displayData(rs);
+                        st.close();
+                    } catch (SQLException se) {
+                        System.out.println("Error with Option 5!");
+                        se.printStackTrace();
+                    }
+                    break;
+                case 6: 
+                    /*** 
+                    try {
                         System.out.print("\nBook Name: ");
-                        String bTitle = in.nextLine();
-                        if (!list.contains(bTitle)) {
-                            System.out.println("Invalid Book! Book does not exist.");
+                        bTitle = in.nextLine();
+                        System.out.print("Group Name: ");
+                        gName = in.nextLine();
+                        state = "SELECT pName, yearPublished, numberPages FROM Book WHERE bTitle = ? AND gName = ?";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, bTitle);
+                        pState.setString(2, gName);
+                        rs = pState.executeQuery();
+                        output = displayData(rs);
+                        pState.close();
+                    } catch (SQLIntegrityConstraintViolationException se) {
+                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
+                            System.out.println("Invalid Book Name!");
+                        } else if (se.getMessage().contains("book_fk_2")) {
+                            System.out.println("Invalid Publisher Name!");
                         } else {
-                            System.out.print("Group Name: ");
-                            String gName = in.nextLine();
-                            try {
-                                String state = "Select pName, yearPublished, numberPages FROM Book WHERE bTitle = ? AND gName = ?";
-                                PreparedStatement pState = conn.prepareStatement(state);
-                                pState.setString(1, bTitle);
-                                pState.setString(2, gName);
-                                ResultSet rs = pState.executeQuery();
-                                conn.commit();
-                                displayInfo(rs);
-                                pState.close();
-                                rs.close();
-                            } catch (SQLException se) {
-                                System.out.println(se.getErrorCode());
-                                System.out.println("Invalid Group! Group does not exist.");
-                            }
+                            System.out.println("Error getting book information!");
                         }
-                    } else if (subchoice == 2) {
+                    } ***/
+                    break;
+                case 7: 
+                    /***
+                    try {
                         System.out.print("Enter Group Name: ");
-                        String gName = in.nextLine();
+                        gName = in.nextLine();
                         System.out.print("Enter Title: ");
-                        String bTitle = in.nextLine();
+                        bTitle = in.nextLine();
                         System.out.print("Enter Publisher Name: ");
-                        String pName  = in.nextLine(); 
+                        pName  = in.nextLine(); 
                         System.out.print("Enter Year Published: ");
                         int year = in.nextInt();
                         System.out.print("Enter Number Of Pages: ");
                         int pages = in.nextInt();
-                        try {
-                            String state = "INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES (?, ?, ?, ?, ?)";
-                            PreparedStatement pState = conn.prepareStatement(state);
-                            pState.setString(1, gName);
-                            pState.setString(2, bTitle);
-                            pState.setString(3, pName);
-                            pState.setInt(4, year);
-                            pState.setInt(5, pages);
-                            pState.executeUpdate();
-                            conn.commit();
-                        } catch (SQLException se) {
-                            System.out.println(se.getErrorCode());
-                            System.out.println("Invalid entry! Book cannot be inserted.");
+                        state = "INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES (?, ?, ?, ?, ?)";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, gName);
+                        pState.setString(2, bTitle);
+                        pState.setString(3, pName);
+                        pState.setInt(4, year);
+                        pState.setInt(5, pages);
+                        pState.executeUpdate();
+                        pState.close();
+                        System.out.println("Book inserted!");
+                    } catch (SQLIntegrityConstraintViolationException se) {
+                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
+                            System.out.println("Invalid Book Name!");
+                        } else if (se.getMessage().contains("book_fk_2")) {
+                            System.out.println("Invalid Publisher Name!");
+                        } else if (se.getMessage().contains("book_uk1")) {
+                            System.out.println("Cannot have duplicate book!");
+                        } else {
+                            System.out.println("Error inserting book!");
                         }
-                    } else if (subchoice == 3) {
-                        System.out.print("Enter Book title: ");
-                        String bTitle = in.nextLine();
+                    }
+                     **/
+                    break;
+                case 8: 
+                    /***
+                    try {
+                    *   System.out.print("Enter Book title: ");
+                        bTitle = in.nextLine();
                         System.out.print("Enter Group Name: ");
-                        String gName = in.nextLine();
-                        try {
-                          String state = "DELETE FROM Book WHERE bTitle = ? AND gname = ?";
-                          PreparedStatement pState = conn.prepareStatement(state);
-                          pState.setString(1, bTitle);
-                          pState.setString(2, gName);
-                          pState.executeUpdate();
-                          conn.commit();
-                        } catch (SQLException se) {
-                            System.out.println(se.getErrorCode());
-                            System.out.println("Invalid entry! Book cannot be removed!");
+                        gName = in.nextLine();
+                        state = "DELETE FROM Book WHERE bTitle = ? AND gname = ?";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, bTitle);
+                        pState.setString(2, gName);
+                        pState.executeUpdate();
+                        pState.close();
+                        System.out.println("Book removed!");
+                    } catch (SQLIntegrityConstraintViolationException se) {
+                        if (se.getMessage().contains("book_fk")) { //error on foreign key 
+                            System.out.println("Invalid Book Name!");
+                        } else if (se.getMessage().contains("book_fk_2")) {
+                            System.out.println("Invalid Publisher Name!");
+                        } else {
+                            System.out.println("Error removing book!");
                         }
-                    } else if (subchoice != 4) {
-                        System.out.println("Invalid Selection!");
+                    } **/
+                    break;
+                case 9: 
+                    //NO CHECK FOR UNIQUE TABLE
+                    System.out.print("Enter New Publisher Name: ");
+                    pName = in.nextLine();
+                    try {
+                        System.out.print("Enter Publisher Address: ");
+                        String pAddress = in.nextLine();
+                        System.out.print("Enter Publisher Phone Number: ");
+                        String pPhone = in.nextLine();
+                        System.out.print("Enter Publisher Email: ");
+                        String pEmail = in.nextLine();
+                        state = "INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES (?, ?, ?, ?)";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, pName);
+                        pState.setString(2, pAddress);
+                        pState.setString(3, pPhone);
+                        pState.setString(4, pEmail);
+                        pState.executeUpdate();
+                        pState.close();
+                    } catch (SQLException se) {
+                        System.out.println("INSERT Error: " + se.getErrorCode());
+                    }
+                    
+                    //gets information about old publisher to make the switch
+                    try {
+                        System.out.print("Enter Old Publisher: ");
+                        String oldPName = in.nextLine();
+                        state = "UPDATE Book SET pName  = ? WHERE pName = ?";
+                        pState = conn.prepareStatement(state);
+                        pState.setString(1, pName);
+                        pState.setString(2, oldPName);
+                        pState.executeUpdate();
+                        System.out.println("Switch sucessful!");
+                    } catch (SQLException se) {
+                        System.out.println("UPDATE Error: " + se.getErrorCode());
                     }
                     break;
-                case 4: 
+                case 10: 
                     exit = true; 
                     break;
             }
-            
-            //if the user hasnt exited out, give option to exit
+
+             //if the user hasnt exited out, give option to exit
             if(!exit) {
                 System.out.print("\n1) Return to Main Menu \n2) Exit\n\nSelection: ");
                 choice = in.nextInt();
-                if (choice == 2) {
-                    exit = true;
-                } 
+                switch (choice) {
+                    case 1:
+                        exit = false;
+                        break;
+                    case 2:
+                        exit = true;
+                        break;
+                    default:
+                        System.out.println("Invalid Selection!");
+                        break;
+                }
             } 
-
-        }while(!exit);
+        } while (!exit);
         
-        try {
-            conn.close();
-        } catch (SQLException se) {
-            System.out.println(se.getErrorCode());
-        } 
-       
-        System.out.println("\nGoodbye!");
+        System.out.println("Goodbye!");
     }
     
+    public static void main(String[] args) {
+        userConnectPrompt();
+        establishConnection();
+        Menu();
+    }
 }
-    
- 
