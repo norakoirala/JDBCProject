@@ -86,7 +86,7 @@ public class JDBC {
                 for(int i =1; i<=columnCount; i++){
                     output += String.format("%-5s%-15s", " ", dispNull(rmd.getColumnName(i)));
                 }
-                output += "\n--------------------------------------------------------\n";
+                output += "\n-------------------------------------------------------------------------------------------\n";
                 //formatting rows
                 do {
                     output += String.format("%-5s", Integer.toString(rs.getRow()));
