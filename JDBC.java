@@ -148,7 +148,7 @@ public class JDBC {
                 case 1: //List All Writing Groups
                     try { 
                         //executes SELECT statement
-                        state = "SELECT gName FROM writingGroup ORDER BY gName ASC";
+                        state = "SELECT gName FROM writingGroup";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
@@ -183,7 +183,7 @@ public class JDBC {
                 case 3: ////List All Publishers
                     try {
                         //executes SELECT statement
-                        state = "SELECT pName from Publisher ORDER BY pName ASC";
+                        state = "SELECT pName from Publisher";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
@@ -218,7 +218,7 @@ public class JDBC {
                 case 5: ////List All Books
                     try {
                         //executes SELECT statement
-                        state = "SELECT bTitle from Book ORDER BY btitle ASC";
+                        state = "SELECT bTitle from Book";
                         st = conn.createStatement();
                         rs = st.executeQuery(state);
                         
