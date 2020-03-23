@@ -5,8 +5,6 @@ CREATE TABLE writingGroup ( /* Table for Writing Group*/
    subject      VARCHAR(100) NOT NULL, /*Column for group's subject*/
    CONSTRAINT writingGroup_pk PRIMARY KEY (gName)); /*Group name is primary key*/
 
-
-
 CREATE TABLE Publisher ( /* Table for Publisher*/
    pName      VARCHAR(100) NOT NULL, /*Column for publisher name*/
    pAddress   VARCHAR(100) NOT NULL, /*Column for publisher address*/
@@ -25,7 +23,7 @@ CONSTRAINT book_fk   FOREIGN KEY(gName) REFERENCES writingGroup(gName), /*Group 
 CONSTRAINT book_fk_2 FOREIGN KEY (pName) REFERENCES Publisher(pName),
 CONSTRAINT book_uk1  UNIQUE (bTitle)); /*Publisher name has a uniqueness constraint as a candidate key*/
 
-
+/*insert statements*/
 INSERT INTO writingGroup (gName, headWriter, yearFounded, subject) VALUES
     ('Database Group', 'David Brown', 2020, 'SQL'),
     ('Information Systems Group', 'Robert McClean', 2015, 'System Design'),
