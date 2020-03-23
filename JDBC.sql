@@ -5,8 +5,6 @@ CREATE TABLE writingGroup ( /* Table for Writing Group*/
    subject      VARCHAR(100) NOT NULL, /*Column for group's subject*/
    CONSTRAINT writingGroup_pk PRIMARY KEY (gName)); /*Group name is primary key*/
 
-
-
 CREATE TABLE Publisher ( /* Table for Publisher*/
    pName      VARCHAR(100) NOT NULL, /*Column for publisher name*/
    pAddress   VARCHAR(100) NOT NULL, /*Column for publisher address*/
@@ -25,33 +23,25 @@ CONSTRAINT book_fk   FOREIGN KEY(gName) REFERENCES writingGroup(gName), /*Group 
 CONSTRAINT book_fk_2 FOREIGN KEY (pName) REFERENCES Publisher(pName),
 CONSTRAINT book_uk1  UNIQUE (bTitle)); /*Publisher name has a uniqueness constraint as a candidate key*/
 
-
+/*insert statements*/
 INSERT INTO writingGroup (gName, headWriter, yearFounded, subject) VALUES
     ('Database Group', 'David Brown', 2020, 'SQL'),
     ('Information Systems Group', 'Robert McClean', 2015, 'System Design'),
     ('Algorithms Group', 'Darin Goldstein', 2010, 'NP Hard Problems'),
-    ('Graphic Arts Group', 'Tor Hovind', 2012, 'User Interface');
+    ('Graphic Arts Group', 'Tor Hovind', 2012, 'User Interface'),
+    ('Cyber Security Group', 'Louis Uuh', 2017,'Encryption'),
+    ('Health Group', 'Gail Farmer', 2000, 'Nursing');
+
+INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
+    ('Computer Science Publishers', '10101 Binary Blvd', '101-010-1010', 'cspublishers@binary.com'),
+    ('Buisness Publishing House', '500 Wall St', '987-654-3210', 'bsh@ws.com'),
+    ('Art Press', '4114 Mural Way', '908-123-4567', 'art@press.com'),
+    ('Health Pub', '911 Help Ln', '911-911-9119', 'help@health.com');
 
 INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES
     ('Database Group', 'Database Fundamentals in SQL', 'Computer Science Publishers', 2020, 400),
     ('Information Systems Group', 'Early Concepts of System Design', 'Buisness Publishing House', 2017, 100),
-    ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publsihers', 2018, 600),
-    ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150);
-
-INSERT INTO Publisher (pName, pAddress, pPhone, pEmail) VALUES
-    ('Computer Science Publishers', '10101 Binary Blvd', '101-010-1010', 'cspublishers@binary.com'),
-    ('Buisness Publishing House', '500 Wall Street', '987-654-3210', 'bsh@ws.com'),
-    ('Art Press', '4114 Mural Way', '908-123-4567', 'art@press.com');
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150);
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Information Systems Group', 'Early Concepts of System Design', 'Buisness Publishing House', 2017, 100);
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publishers', 2018, 600);
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Algorithms Group', 'Solving', 'Art Press', 2018, 600);
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES
-    ('Database Group', 'Database Fundamentals in SQL', 'Computer Science Publishers', 2020, 400);
-
-INSERT INTO Book (gName, bTitle, pName, yearPublished, numberPages) VALUES ('Graphic Arts Group', 'Weed', 'Art Press', 2019, 420 );
+    ('Algorithms Group', 'Solving NP Hard Problems', 'Computer Science Publishers', 2018, 600),
+    ('Graphic Arts Group', 'Designing for the User', 'Art Press', 2013, 150),
+    ('Cyber Security Group', 'RSA', 'Computer Science Publishers', 2018, 1000),
+    ('Health Group', 'Coronavirus', 'Health Pub', 2020, 1020);
