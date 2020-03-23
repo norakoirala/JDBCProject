@@ -91,7 +91,7 @@ public class JDBC {
                 do {
                     output += String.format("%-5s", Integer.toString(rs.getRow()));
                     for(int i =1; i<=columnCount; i++){
-                        output += String.format("%-15s", dispNull(rs.getString(i)));
+                        output += String.format("%-20s",dispNull(rs.getString(i))," ");
                     }
                     output += "\n";
                 } while (rs.next());
